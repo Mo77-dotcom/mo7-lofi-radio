@@ -12,11 +12,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install FFmpeg and Fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-liberation
 
-      - name: Start Quick Stream
+      - name: Start Stream with Forced Clock
         env:
           STREAM_KEY: ${{ secrets.STREAM_KEY }}
         run: |
-          ffmpeg -loop 1 -i background.jpg -re -i audio.mp3 -vf "drawtext=text='%{localtime\:%H\\\\\:%M}':fontcolor=white:fontsize=45:x=w-tw-20:y=20:box=1:boxcolor=black@0.4" -c:v libx264 -preset ultrafast -tune zerolatency -b:v 1000k -pix_fmt yuv420p -g 30 -c:a aac -b:a 96k -f flv rtmp://a.rtmp.youtube.com/live2/$STREAM_KEY
+          ffmpeg -loop 1 -i background.jpg -re -i audio.mp3 \
+          -vf "drawtext=fontfile=/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf:text='%{localtime\:%H\\\\\:%M}':fontcolor=white:fontsize=50:x=w-tw-30:y=30:box=1:boxcolor=black@0.5" \
+          -c:v libx264 -preset ultrafast -tune zerolatency -b:v 1500k -pix_fmt yuv420p -g 30 -c:a aac -b:a 96k -f flv rtmp://a.rtmp.youtube.com/live2/$STREAM_KEY
