@@ -12,17 +12,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Install FFmpeg and Fonts
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-liberation
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-liberation
 
-      - name: Start Stream with Stable Clock
+      - name: Start Stream
         env:
           STREAM_KEY: ${{ secrets.STREAM_KEY }}
         run: |
-          ffmpeg -loop 1 -i background.jpg -re -i audio.mp3 \
-          -vf "drawtext=fontfile=/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf:text='%{localtime\:%H\\\\\:%M\\\\\:%S}':fontcolor=white:fontsize=50:x=w-tw-30:y=30:box=1:boxcolor=black@0.5, \
-               drawtext=fontfile=/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf:text='%{localtime\:%d-%m-%Y}':fontcolor=white:fontsize=25:x=w-tw-30:y=90:box=1:boxcolor=black@0.5, \
-               drawtext=fontfile=/usr/share/fonts/truetype/liberation/LiberationSans-Italic.ttf:text='Mo7 Radio Live':fontcolor=yellow:fontsize=20:x=w-tw-30:y=130:box=1:boxcolor=black@0.5" \
-          -c:v libx264 -preset ultrafast -b:v 1500k -maxrate 1500k -bufsize 3000k -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/$STREAM_KEY
+          ffmpeg -loop 1 -i background.jpg -re -i audio.mp3 -vf "drawtext=fontfile=/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf:text='%{localtime\:%H\\\\\:%M}':fontcolor=white:fontsize=60:x=750:y=50:box=1:boxcolor=black@0.5,drawtext=fontfile=/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf:text='%{localtime\:%d-%m}':fontcolor=white:fontsize=30:x=750:y=120:box=1:boxcolor=black@0.5" -c:v libx264 -preset ultrafast -b:v 1500k -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/$STREAM_KEY
